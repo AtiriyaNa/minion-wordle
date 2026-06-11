@@ -277,6 +277,13 @@ export function Game() {
         onUnlockHint={tryUnlockHint}
       />
 
+      {/* Footer */}
+      <div className="w-full text-center py-1.5 bg-minion-blue/10 border-t border-minion-border">
+        <p className="text-minion-muted text-[11px] font-semibold tracking-wide">
+          Designed by <span className="text-minion-blue font-bold">Atiriya Narayan</span>
+        </p>
+      </div>
+
       {/* Win/Lose Modal */}
       <WinModal
         isOpen={winOpen}
