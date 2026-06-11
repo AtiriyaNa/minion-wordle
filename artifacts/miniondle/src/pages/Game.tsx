@@ -278,7 +278,7 @@ export function Game() {
       />
 
       {/* Footer */}
-      <div className="w-full text-center py-1.5 bg-minion-blue/10 border-t border-minion-border">
+      <div className="w-full text-right px-4 pt-2 pb-1.5 bg-minion-blue/10 border-t border-minion-border mt-1">
         <p className="text-minion-muted text-[11px] font-semibold tracking-wide">
           Designed by <span className="text-minion-blue font-bold">Atiriya Narayan</span>
         </p>
