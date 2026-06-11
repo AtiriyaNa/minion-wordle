@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Minion palette */
+  --color-minion-bg:         #FFF9E6;
+  --color-minion-panel:      #FFFDF5;
+  --color-minion-cardbg:     #FFFAEA;
+  --color-minion-blue:       #1A6BB5;
+  --color-minion-yellow:     #F5C800;
+  --color-minion-green:      #3A9E4A;
+  --color-minion-gray:       #6B7280;
+  --color-minion-dark:       #1C1C1E;
+  --color-minion-muted:      #6B7280;
+  --color-minion-border:     #E5D980;
+  --color-minion-accent:     #F5C800;
+  --color-minion-keybg:      #EDE8C8;
+  --color-minion-keyborder:  #D4CC8A;
+
+  --font-sans: 'Nunito', 'Inter', sans-serif;
+  --font-display: 'Fredoka One', 'Nunito', sans-serif;
+  --radius: 0.5rem;
+}
+
+:root {
+  --background: 53 100% 96%;
+  --foreground: 220 9% 11%;
+  color-scheme: light;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  #root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body {
+    font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+    background-color: #FFF9E6;
+    color: #1C1C1E;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+.font-display {
+  font-family: 'Fredoka One', cursive;
+}
+
+/* Tile flip animation */
+@keyframes tile-flip {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(-90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+/* Safe area for mobile */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
