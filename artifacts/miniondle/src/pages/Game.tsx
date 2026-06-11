@@ -7,7 +7,7 @@ import { HintModal } from "@/components/HintModal";
 import { WinModal } from "@/components/WinModal";
 import { evaluateGuess, getKeyboardColors, MAX_GUESSES } from "@/lib/gameLogic";
 import type { GuessLetter } from "@/lib/gameLogic";
-import { getDailyWord, getTodayIST } from "@/data/wordbank";
+import { getDailyWord, getTodayIST, getWordleNumber } from "@/data/wordbank";
 
 interface State {
   guesses: GuessLetter[][];
@@ -113,6 +113,24 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+function getNextResetLabel(): string {
+  const now = new Date();
+  const istOffset = 5.5 * 60 * 60 * 1000;
+  const istNow = new Date(now.getTime() + istOffset);
+
+  // Next midnight IST = tomorrow at 00:00 IST
+  const nextMidnightIST = new Date(
+    Date.UTC(istNow.getUTCFullYear(), istNow.getUTCMonth(), istNow.getUTCDate() + 1, 0, 0, 0)
+    - istOffset
+  );
+
+  const d = new Date(nextMidnightIST.getTime() + istOffset);
+  const day = d.getUTCDate();
+  const month = d.toLocaleString("en-GB", { month: "short", timeZone: "UTC" });
+  const year = d.getUTCFullYear();
+  return `12:00 AM IST · ${day} ${month} ${year}`;
+}
+
 export function Game() {
   const wordEntry = getDailyWord();
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
@@ -203,8 +221,8 @@ export function Game() {
     <div className="min-h-screen flex flex-col bg-minion-bg select-none overflow-hidden">
       <Header onHintOpen={() => setHintOpen(true)} streak={state.streak} />
 
-      {/* Word length indicator */}
-      <div className="flex justify-center pt-3 pb-1">
+      {/* Word length indicator + day info */}
+      <div className="flex flex-col items-center pt-3 pb-1 gap-1">
         <div className="bg-minion-blue/10 border border-minion-blue/20 rounded-full px-4 py-1.5 flex items-center gap-2">
           <span className="text-minion-blue text-xs font-bold uppercase tracking-widest">
             {wordEntry.word.length}-Letter Word
@@ -213,6 +231,11 @@ export function Game() {
           <span className="text-minion-muted text-xs">
             {state.guesses.length}/{MAX_GUESSES} guesses
           </span>
+        </div>
+        <div className="flex items-center gap-2 text-[11px] text-minion-muted font-semibold">
+          <span className="text-minion-blue font-bold">#{getWordleNumber()}</span>
+          <span>·</span>
+          <span>Next word: {getNextResetLabel()}</span>
         </div>
       </div>
 
