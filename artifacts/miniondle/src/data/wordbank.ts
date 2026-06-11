@@ -87,7 +87,7 @@ export function getWordleNumber(): number {
   const now = new Date();
   const istOffset = 5.5 * 60 * 60 * 1000;
   const istNow = new Date(now.getTime() + istOffset);
-  const epoch = new Date("2025-01-01T00:00:00.000Z");
+  const epoch = new Date("2026-06-11T00:00:00.000Z");
   return Math.floor((istNow.getTime() - epoch.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 }
 
