@@ -218,7 +218,7 @@ export function Game() {
   const keyColors = getKeyboardColors(state.guesses);
 
   return (
-    <div className="min-h-screen flex flex-col bg-minion-bg select-none overflow-hidden">
+    <div className="h-dvh flex flex-col bg-minion-bg select-none overflow-hidden">
       <Header onHintOpen={() => setHintOpen(true)} streak={state.streak} />
 
       {/* Word length indicator + day info */}
