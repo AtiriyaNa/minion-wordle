@@ -3,8 +3,7 @@ import cors from "cors";
 import { pinoHttp } from "pino-http";
 import type { IncomingMessage, ServerResponse } from "http";
 import router from "./routes/index.js";
-import { logger } from "./lib/logger";
-
+import { logger } from "./lib/logger.js";   // was "./lib/logger"
 const app: Express = express();
 
 app.use(
