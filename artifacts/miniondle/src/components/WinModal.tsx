@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import type { GuessLetter } from "@/lib/gameLogic";
 import { MAX_GUESSES } from "@/lib/gameLogic";
 import { getWordleNumber, getTodayIST } from "@/data/wordbank";
@@ -26,9 +26,25 @@ function buildEmojiGrid(guesses: GuessLetter[][]): string {
     .join("\n");
 }
 
+const VICTORY_VIDEOS = [
+  "wCkerYMffMo",
+  "doUgXDKTmKI",
+  "6VXeLN7BroM",
+  "tE-9qiT4_BY",
+  "JGk42E2eSlU",
+  "WcEWFeN5Eu0",
+  "aQBxBB8LbpQ",
+];
+
 export function WinModal({ isOpen, won, answer, guesses, onClose }: WinModalProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [copied, setCopied] = useState(false);
+  const videoId = useMemo(
+    () => VICTORY_VIDEOS[Math.floor(Math.random() * VICTORY_VIDEOS.length)],
+    // Pick once per open — re-randomise each time the modal opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isOpen]
+  );
 
   useEffect(() => {
     if (!isOpen || !won) return;
@@ -151,7 +167,7 @@ export function WinModal({ isOpen, won, answer, guesses, onClose }: WinModalProp
                     <iframe
                       ref={iframeRef}
                       className="absolute inset-0 w-full h-full"
-                      src="https://www.youtube.com/embed/M7FIvfx5J10?autoplay=1&rel=0"
+                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
                       title="Minions Victory Song"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
