@@ -1,5 +1,5 @@
-import app from "./app";
-import { logger } from "./lib/logger";
+typescriptimport app from "./app.js"; 
+import { logger } from "./lib/logger.js";  // was "./lib/logger"
 
 const rawPort = process.env["PORT"];
 
