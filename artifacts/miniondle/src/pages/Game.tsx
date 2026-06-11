@@ -171,10 +171,12 @@ export function Game() {
     dispatch({ type: "SUBMIT", answer });
   }, [state.gameOver, state.currentGuess, wordEntry.word]);
 
-  // Physical keyboard support
+  // Physical keyboard support — skip when focus is inside an input or textarea
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (e.key === "Enter") handleEnter();
       else if (e.key === "Backspace") handleBackspace();
       else if (/^[a-zA-Z]$/.test(e.key)) handleKey(e.key);
@@ -280,7 +282,7 @@ export function Game() {
         isOpen={winOpen}
         won={state.won}
         answer={wordEntry.word}
-        guessCount={state.guesses.length}
+        guesses={state.guesses}
         onClose={() => setWinOpen(false)}
       />
     </div>

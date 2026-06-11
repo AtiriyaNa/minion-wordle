@@ -1,20 +1,37 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { GuessLetter } from "@/lib/gameLogic";
+import { MAX_GUESSES } from "@/lib/gameLogic";
+import { getWordleNumber, getTodayIST } from "@/data/wordbank";
 
 interface WinModalProps {
   isOpen: boolean;
   won: boolean;
   answer: string;
-  guessCount: number;
+  guesses: GuessLetter[][];
   onClose: () => void;
 }
 
-export function WinModal({ isOpen, won, answer, guessCount, onClose }: WinModalProps) {
+function buildEmojiGrid(guesses: GuessLetter[][]): string {
+  return guesses
+    .map((row) =>
+      row
+        .map(({ state }) => {
+          if (state === "correct") return "🟩";
+          if (state === "present") return "🟨";
+          return "⬛";
+        })
+        .join("")
+    )
+    .join("\n");
+}
+
+export function WinModal({ isOpen, won, answer, guesses, onClose }: WinModalProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !won) return;
-    // Stop video when modal closes
     return () => {
       if (iframeRef.current) {
         iframeRef.current.src = iframeRef.current.src;
@@ -22,16 +39,36 @@ export function WinModal({ isOpen, won, answer, guessCount, onClose }: WinModalP
     };
   }, [isOpen, won]);
 
-  const shareText = won
-    ? `🍌 Miniondle — I guessed today's word "${answer}" in ${guessCount} ${guessCount === 1 ? "try" : "tries"}! Bello! 🎉`
-    : `🍌 Miniondle — I couldn't guess today's word! 😭 The answer was "${answer}".`;
+  const wordleNum = getWordleNumber();
+  const dateStr = getTodayIST().split("-").reverse().join("/"); // DD/MM/YYYY
+  const score = won ? `${guesses.length}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`;
+  const emojiGrid = buildEmojiGrid(guesses);
 
-  function handleShare() {
+  const shareText = `🍌 Miniondle #${wordleNum} — ${dateStr}\n${score}\n\n${emojiGrid}`;
+
+  async function handleShare() {
     if (navigator.share) {
-      navigator.share({ text: shareText });
-    } else {
-      navigator.clipboard.writeText(shareText);
-      alert("Copied to clipboard!");
+      try {
+        await navigator.share({ text: shareText });
+        return;
+      } catch {
+        // fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback for older browsers
+      const el = document.createElement("textarea");
+      el.value = shareText;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   }
 
@@ -69,26 +106,34 @@ export function WinModal({ isOpen, won, answer, guessCount, onClose }: WinModalP
             </div>
 
             <div className="p-5 flex flex-col gap-4">
-              {won ? (
-                <div className="text-center">
-                  <motion.p
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-minion-dark font-extrabold text-2xl uppercase tracking-widest"
-                  >
-                    {answer}
-                  </motion.p>
-                  <p className="text-minion-muted text-sm mt-1">
-                    Solved in <span className="font-bold text-minion-blue">{guessCount}</span> {guessCount === 1 ? "guess" : "guesses"}!
-                  </p>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <p className="text-minion-muted text-sm">The word was:</p>
-                  <p className="text-minion-dark font-extrabold text-2xl uppercase tracking-widest mt-1">{answer}</p>
-                </div>
-              )}
+              {/* Score + answer */}
+              <div className="text-center">
+                <p className="text-minion-muted text-xs uppercase tracking-widest font-semibold">
+                  Miniondle #{wordleNum} · {dateStr}
+                </p>
+                {won ? (
+                  <>
+                    <p className="text-minion-dark font-extrabold text-3xl mt-1">
+                      {score} 🍌
+                    </p>
+                    <p className="text-minion-muted text-sm mt-1">
+                      The word was <span className="font-bold text-minion-dark uppercase tracking-wider">{answer}</span>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-minion-dark font-extrabold text-3xl mt-1">X/6 😭</p>
+                    <p className="text-minion-muted text-sm mt-1">
+                      The word was <span className="font-bold text-minion-dark uppercase tracking-wider">{answer}</span>
+                    </p>
+                  </>
+                )}
+              </div>
+
+              {/* Emoji grid preview */}
+              <div className="bg-minion-cardbg border border-minion-border rounded-xl p-3 text-center">
+                <p className="font-mono text-xl leading-6 tracking-wider whitespace-pre">{emojiGrid}</p>
+              </div>
 
               {/* YouTube Victory Song */}
               {won && (
@@ -120,7 +165,8 @@ export function WinModal({ isOpen, won, answer, guessCount, onClose }: WinModalP
                 onClick={handleShare}
                 className="w-full bg-minion-blue text-white font-extrabold py-3 rounded-xl text-base tracking-wide hover:bg-minion-blue/90 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
-                <span>🍌</span> Share Result
+                <span>{copied ? "✅" : "🍌"}</span>
+                {copied ? "Copied!" : "Share Result"}
               </button>
 
               <p className="text-center text-xs text-minion-muted">
