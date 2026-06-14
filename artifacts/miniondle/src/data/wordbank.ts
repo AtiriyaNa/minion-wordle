@@ -86,7 +86,7 @@ export function getDailyWord(): WordEntry {
   hash = Math.imul(hash, 0x45d9f3b);
   hash ^= hash >>> 16;
 
-  const index = hash % WORD_BANK.length;
+  const index = (hash >>> 0) % WORD_BANK.length;
   return WORD_BANK[index];
 }
 
