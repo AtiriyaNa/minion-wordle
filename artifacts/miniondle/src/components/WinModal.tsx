@@ -60,7 +60,7 @@ export function WinModal({ isOpen, won, answer, guesses, onClose }: WinModalProp
   const score = won ? `${guesses.length}/${MAX_GUESSES}` : `X/${MAX_GUESSES}`;
   const emojiGrid = buildEmojiGrid(guesses);
 
-  const shareText = `🍌 Miniondle #${wordleNum} — ${dateStr}\n${score}\n\n${emojiGrid}`;
+  const shareText = `🍌 Miniondle #${wordleNum} — ${dateStr}\n${score}\n\n${emojiGrid}\n\nplayminiondle.vercel.app`;
 
   async function handleShare() {
     if (navigator.share) {
