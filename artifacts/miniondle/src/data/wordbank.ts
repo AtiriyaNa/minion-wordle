@@ -74,14 +74,20 @@ export function getDailyWord(): WordEntry {
   const dateStr = `${year}-${month}-${day}`;
 
   // Hash the date string deterministically
-  let hash = 0;
-  for (let i = 0; i < dateStr.length; i++) {
-    hash = (hash * 31 + dateStr.charCodeAt(i)) >>> 0;
-  }
-
-  const index = hash % WORD_BANK.length;
-  return WORD_BANK[index];
+// Hash the date string deterministically
+let hash = 0;
+for (let i = 0; i < dateStr.length; i++) {
+  hash = (hash * 31 + dateStr.charCodeAt(i)) >>> 0;
 }
+
+// Extra mixing so consecutive dates don't map to consecutive indices
+hash ^= hash >>> 16;
+hash = Math.imul(hash, 0x45d9f3b);
+hash ^= hash >>> 16;
+hash = Math.imul(hash, 0x45d9f3b);
+hash ^= hash >>> 16;
+
+const index = hash % WORD_BANK.length;
 
 export function getWordleNumber(): number {
   const now = new Date();
